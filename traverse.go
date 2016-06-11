@@ -102,6 +102,16 @@ func (n *Networks) Network(result interface{}) (*net.IPNet, error) {
 	}, nil
 }
 
+// NetworkOffset returns the current network, the data offset to pass to
+// Decode, and an error, if any.
+func (n *Networks) NetworkOffset() (*net.IPNet, uintptr, error) {
+	offset, err := n.reader.resolveDataPointer(n.lastNode.pointer)
+	return &net.IPNet{
+		IP:   n.lastNode.ip,
+		Mask: net.CIDRMask(int(n.lastNode.bit), len(n.lastNode.ip)*8),
+	}, offset, err
+}
+
 // Err returns an error, if any, that was encountered during iteration.
 func (n *Networks) Err() error {
 	return n.err
